@@ -8,11 +8,15 @@ const io = new Server(httpServer);
 
 io.on('connection', (socket) => {
     console.log(`Cliente conectado id: ${socket.id}`);
-    socket.on('timeUpdate', (tiempo) => {
-        console.log(`Se adelanto al segundo: ${tiempo}`);
-        io.emit('timeUpdate', tiempo)
 
+    socket.on('timeUpdate', (tiempo) => {
+        io.emit('timeUpdate', tiempo)
     })
+
+    socket.on("masterChanged", (socketId) => {
+      io.emit("masterChanged", socketId);
+    });
+
     socket.on('pausa', (data) => {
         console.log(`Se pausó ${data}`);
         io.emit('pausa', data)

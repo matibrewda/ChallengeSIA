@@ -1,11 +1,13 @@
+let master = false;
+let socket = io("ws://localhost:3000");
+let player;
+
 window.onload = () => {
-  let socket = io("ws://localhost:3000");
-  let player = document.getElementById("video");
+  player = document.getElementById("video");
 
-  player.addEventListener("timeupdate", (event) => {
-    socket.emit('timeUpdate', player.currentTime)
-});
-
+  player.addEventListener("seeking", (event) => {
+    if (master) socket.emit("timeUpdate", player.currentTime);
+  });
 
   player.addEventListener("pause", (event) => {
     socket.emit("pausa", true);
@@ -15,31 +17,39 @@ window.onload = () => {
     socket.emit("pausa", false);
   });
 
-
-  socket.on('pausa', (data) => {
-    if(data)
-      pauseVid()
-    else
-      playVid()
-  })
-
-  socket.on('timeUpdate', (tiempo) => {
-    if(tiempo){
-        console.log(tiempo)
-        setTime(tiempo)
+  socket.on("masterChanged", (newMaster) => {
+    if (newMaster != socket.id) {
+      master = false;
+      document.getElementById("masterButton").innerHTML = master
+        ? "Dejar de ser el master"
+        : "Ser el master";
     }
+  });
 
-  })
+  socket.on("pausa", (shouldPause) => {
+    if (shouldPause) {
+      player.pause();
+      console.log("Pausa");
+    } else {
+      player.play();
+      console.log("play");
+    }
+  });
 
-  function playVid() {
-    player.play();
-  }
+  socket.on("timeUpdate", (tiempo) => {
+    if (!master) {
+      player.currentTime = tiempo;
+      console.log("tiempo actualizado");
+    }
+  });
+};
 
-  function pauseVid() {
-    player.pause();
-  }
-  function setTime(tiempo){
-    console.log(tiempo)
-    player.currentTime = tiempo;
-  }
+function toggleMaster() {
+  master = !master;
+
+  if (master) socket.emit("masterChanged", socket.id);
+
+  document.getElementById("masterButton").innerHTML = master
+    ? "Dejar de tomar el control"
+    : "Tomar el control";
 }
