@@ -1,0 +1,24 @@
+{
+  "name": "challengesia",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon ./src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matibrewda/ChallengeSIA.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/matibrewda/ChallengeSIA/issues"
+  },
+  "homepage": "https://github.com/matibrewda/ChallengeSIA#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.5.3"
+  }
+}
